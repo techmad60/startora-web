@@ -1,5 +1,5 @@
 import type { Business, Founder, Shareholder, Witness } from "@/lib/types";
-
+// #Techmad.....
 export const business: Business = {
   name: "Chiamaka's Kitchen",
   entityType: "BN",
