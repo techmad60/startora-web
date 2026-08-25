@@ -1,0 +1,10 @@
+{
+  "redirects": [
+    {
+      "source": "/discount",
+      "destination": "https://docs.google.com/forms/d/e/1FAIpQLSd9fzP9Y9PKREnus46PIZPGcA0d5T4Gzobg6LnZL3zIq0vuMQ/viewform",
+      "permanent": false
+    }
+    
+  ]
+}
