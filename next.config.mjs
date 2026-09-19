@@ -4,12 +4,14 @@ const nextConfig = {
   reactStrictMode: true,
 
   async rewrites() {
-    return [
-      {
-        source: "/discount",
-        destination: "/discount/index.html",
-      },
-    ];
+    return {
+      beforeFiles: [
+        {
+          source: "/discount",
+          destination: "/discount/index.html",
+        },
+      ],
+    };
   },
 };
 
