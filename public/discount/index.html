@@ -109,10 +109,10 @@ src="https://www.facebook.com/tr?id=2056992944953243&ev=PageView&noscript=1"
     padding:32px var(--margin-mobile) 48px;
     display:flex;
     flex-direction:column;
-    gap:var(--section-gap);
+    gap:32px;
   }
   @media(min-width:768px){
-    main{flex-direction:row;align-items:flex-start;padding-left:var(--gutter);padding-right:var(--gutter)}
+    main{flex-direction:row;align-items:flex-start;padding-left:var(--gutter);padding-right:var(--gutter);gap:var(--section-gap)}
   }
 
   .col-left{
@@ -159,7 +159,7 @@ src="https://www.facebook.com/tr?id=2056992944953243&ev=PageView&noscript=1"
   .price-row{
     display:flex;
     align-items:baseline;
-    gap:16px;
+    gap:8px;
   }
   .price{
     font-family:Inter,ui-sans-serif,system-ui,sans-serif;
@@ -169,7 +169,7 @@ src="https://www.facebook.com/tr?id=2056992944953243&ev=PageView&noscript=1"
     color:#fff;
   }
   .price-old{
-    font-size:16px;
+    font-size:20px;
     font-weight:700;
     color:rgba(255,255,255,.5);
     text-decoration:line-through;
@@ -177,11 +177,11 @@ src="https://www.facebook.com/tr?id=2056992944953243&ev=PageView&noscript=1"
   .pill-row{
     display:flex;
     flex-wrap:wrap;
-    gap:8px;
+    gap:10px;
   }
   .pill{
-    font-size:12px;
-    padding:4px 12px;
+    font-size:14px;
+    padding:6px 16px;
     border-radius:999px;
   }
   .pill-save{
@@ -430,7 +430,7 @@ src="https://www.facebook.com/tr?id=2056992944953243&ev=PageView&noscript=1"
       </div>
       <div class="pill-row">
         <span class="pill pill-save">Save ₦15,000</span>
-        <span class="pill pill-outline">September 1–21</span>
+        <span class="pill pill-outline">October 1–21</span>
         <span class="pill pill-outline">Limited to 25 business owners</span>
       </div>
     </div>
@@ -553,8 +553,32 @@ const GOOGLE_FORM_EMAIL_ENTRY = "entry.1810515277";
 const GOOGLE_FORM_NAME_ENTRY = "entry.1484698629";
 // ================================================================
 
-function track(eventName, data = {}) {
-  if (typeof window.fbq === "function") window.fbq("track", eventName, data);
+function track(eventName, data = {}, eventId = null) {
+  if (typeof window.fbq !== "function") return;
+  if (eventId) {
+    window.fbq("track", eventName, data, { eventID: eventId });
+  } else {
+    window.fbq("track", eventName, data);
+  }
+}
+
+function generateEventId() {
+  if (window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID();
+  return "evt_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+}
+
+// Reads whatever utm_ parameters are in the URL, regardless of channel --
+// works the same for Meta's dynamic {{...}} links, manual WhatsApp links,
+// future TikTok links, anything. Missing ones just come back blank.
+function getUtmParams() {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    utmSource: params.get("utm_source") || "",
+    utmMedium: params.get("utm_medium") || "",
+    utmCampaign: params.get("utm_campaign") || "",
+    utmContent: params.get("utm_content") || "",
+    utmTerm: params.get("utm_term") || ""
+  };
 }
 
 document.getElementById("leadForm").addEventListener("submit", async function (e) {
@@ -569,11 +593,16 @@ document.getElementById("leadForm").addEventListener("submit", async function (e
   submitBtn.disabled = true;
   submitBtn.innerHTML = '<span class="spinner"></span> Processing...';
 
+  // Same ID goes to both the Pixel (below) and the CAPI event fired from
+  // WebApp_doPost.gs, so Meta deduplicates them into one Lead instead of
+  // counting two.
+  const leadEventId = generateEventId();
+
   track("Lead", {
     content_name: "Startora 25 Month Anniversary Offer",
     value: 35000,
     currency: "NGN"
-  });
+  }, leadEventId);
 
   // Minimum time the spinner stays visible, so the button never feels like it
   // "flashed" even when the background call finishes almost instantly.
@@ -583,7 +612,7 @@ document.getElementById("leadForm").addEventListener("submit", async function (e
     method: "POST",
     mode: "no-cors", // Apps Script won't return readable CORS headers
     headers: { "Content-Type": "text/plain" }, // avoids a CORS preflight
-    body: JSON.stringify({ name, phone, email })
+    body: JSON.stringify({ name, phone, email, eventId: leadEventId, ...getUtmParams() })
   }).catch(err => {
     console.error("Lead capture failed:", err);
     // Don't block the redirect on this — the person should still reach the Form.
