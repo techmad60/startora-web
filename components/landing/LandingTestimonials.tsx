@@ -1,10 +1,19 @@
-// Swap the placeholder text below for real client quotes. Keep the
-// name/business/quote shape — everything else (avatar initials, layout)
-// pulls from that automatically.
-const TESTIMONIAL_SLOTS = [
-  { name: "[Client name]", business: "[Business name]", quote: "[Add a real client quote here — what did Startora actually do for them, in their words.]" },
-  { name: "[Client name]", business: "[Business name]", quote: "[Add a real client quote here — what did Startora actually do for them, in their words.]" },
-  { name: "[Client name]", business: "[Business name]", quote: "[Add a real client quote here — what did Startora actually do for them, in their words.]" },
+﻿const TESTIMONIAL_SLOTS = [
+  {
+    name: "Joshua Nwamba",
+    business: "The Market Guru",
+    quote: "I was under pressure to register my business when I came across Startora. I thought the process would take weeks, but to my surprise, my certificate was ready within just 24 hours. Startora made the entire process incredibly smooth and stress-free.",
+  },
+  {
+    name: "Caleb",
+    business: "Jacmate Ltd.",
+    quote: "Before discovering Startora, I had worked with an agency that collected my money but failed to deliver, leaving me waiting for months. My experience made me skeptical, but I now understand the value of finding a service provider you can trust.",
+  },
+  {
+    name: "Cynthia Chiemerie",
+    business: "Krowned Ltd.",
+    quote: "I was amazed when I heard about Startora. I had always wished there was a platform where I could track all my business compliance obligations in one place and avoid hefty fines. Discovering Startora felt like finding a solution to a problem I had wanted solved for a long time.",
+  },
 ];
 
 function initials(name: string) {
@@ -28,7 +37,6 @@ export function LandingTestimonials() {
         <div className="lp-testimonial-grid">
           {TESTIMONIAL_SLOTS.map((t, i) => (
             <div className="lp-testimonial-card" key={i}>
-              <span className="lp-testimonial-placeholder-tag">Replace with a real quote</span>
               <p className="lp-testimonial-quote">&ldquo;{t.quote}&rdquo;</p>
               <div className="lp-testimonial-who">
                 <div className="lp-testimonial-av">{initials(t.name)}</div>
